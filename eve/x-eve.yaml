@@ -1,0 +1,11 @@
+agents:
+  profiles:
+    review-cheap:
+      - harness: mclaude
+        model: sonnet
+        reasoning_effort: low
+
+    improver-capable:
+      - harness: mclaude
+        model: sonnet
+        reasoning_effort: high

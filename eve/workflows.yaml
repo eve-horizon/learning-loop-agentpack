@@ -1,0 +1,61 @@
+workflows:
+  post-session-review:
+    trigger:
+      system:
+        event: job.attempt.completed
+    steps:
+      - name: review
+        agent:
+          name: session_reviewer
+        prompt: |
+          Review the completed job {event.job_id} for agent {event.assignee}.
+          Skip non-agent jobs and skip the reviewer/improver themselves.
+
+          INWARD: Load the agent's current memory from org docs.
+          Read the job's conversation from thread {event.thread_id}.
+          Extract learnings and update memory. Create skills if warranted.
+
+          OUTWARD: Scan the session for app and environment friction:
+          - App API calls that returned unexpected shapes or errors
+          - App CLI commands that failed or were missing flags
+          - Fallbacks to curl/fetch when a CLI command should have worked
+          - Skills that were loaded but had wrong/stale instructions
+          - Documentation that was missing or outdated
+          - Config issues that slowed the agent down
+          - Eve platform issues (less common)
+
+          For each outward finding, emit a structured json-result with
+          type, severity, description, evidence, and suggested_fix.
+
+          If any outward findings have severity >= medium, dispatch
+          a child job to platform-improver with the findings.
+
+          Post a Slack summary of all actions taken.
+
+  skill-review-heartbeat:
+    trigger:
+      cron:
+        schedule: "0 */6 * * *"
+    steps:
+      - name: review-skills
+        agent:
+          name: session_reviewer
+        prompt: |
+          Review all agent skills in this org.
+          Check each skill's last-used date and update count.
+          Archive unused skills. Merge duplicates.
+          Promote high-value skills to the project repo if configured.
+
+  batch-improvements:
+    trigger:
+      cron:
+        schedule: "0 9 * * 1"
+    steps:
+      - name: batch-fix
+        agent:
+          name: platform_improver
+        prompt: |
+          Review accumulated low-severity outward findings from the past week.
+          Group related findings (e.g. multiple CLI gaps in the same module).
+          For each group, open a single PR that addresses all items.
+          Post a weekly summary to Slack.

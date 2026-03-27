@@ -1,0 +1,23 @@
+version: 1
+agents:
+  session_reviewer:
+    slug: session-reviewer
+    skill: session-reviewer
+    harness_profile: review-cheap
+    description: "Reviews completed agent sessions — extracts learnings (inward) and triages platform friction (outward)"
+    policies:
+      permission_policy: auto_edit
+      git:
+        commit: never
+        push: never
+
+  platform_improver:
+    slug: platform-improver
+    skill: platform-improver
+    harness_profile: improver-capable
+    description: "Fixes friction identified by the reviewer — opens PRs against app or platform repos for human review"
+    policies:
+      permission_policy: auto_edit
+      git:
+        commit: auto
+        push: on_success

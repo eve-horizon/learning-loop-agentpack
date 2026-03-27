@@ -1,0 +1,3 @@
+x-eve:
+  packs:
+    - source: ./

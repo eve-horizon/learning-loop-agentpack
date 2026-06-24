@@ -45,7 +45,7 @@ eve memory set --org $EVE_ORG_ID --agent {your-slug} \
 | `learnings` | Discoveries, corrections, surprises | "DNS resolution fails before CNI on this cluster" |
 | `decisions` | Choices made with rationale | "Chose Postgres over Redis for job queue — durability wins" |
 | `conventions` | Project/team patterns | "All API responses wrap data in { data: T, meta: {} }" |
-| `context` | Environment facts | "Staging API is at api.eh1.incept5.dev" |
+| `context` | Environment facts | "Staging API is at api.eve.example.com" |
 | `user` | User preferences and interaction style | "User prefers terse output, no color codes" |
 
 ### Create Skills for Reusable Procedures
